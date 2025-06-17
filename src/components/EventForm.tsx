@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, FileText, Save } from 'lucide-react';
+import { format } from 'date-fns';
 import type { Event, EventFormData } from '../types';
 
 interface EventFormProps {
@@ -7,9 +8,10 @@ interface EventFormProps {
   onSubmit: (data: EventFormData) => Promise<void>;
   onCancel: () => void;
   isOpen: boolean;
+  selectedDate?: Date | null;
 }
 
-export function EventForm({ event, onSubmit, onCancel, isOpen }: EventFormProps) {
+export function EventForm({ event, onSubmit, onCancel, isOpen, selectedDate }: EventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     title: '',
     description: '',
@@ -27,6 +29,15 @@ export function EventForm({ event, onSubmit, onCancel, isOpen }: EventFormProps)
         start_time: new Date(event.start_time).toISOString().slice(0, 16),
         end_time: event.end_time ? new Date(event.end_time).toISOString().slice(0, 16) : '',
       });
+    } else if (selectedDate) {
+      // Pre-fill with selected date
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
+      setFormData({
+        title: '',
+        description: '',
+        start_time: `${dateStr}T09:00`,
+        end_time: `${dateStr}T10:00`,
+      });
     } else {
       setFormData({
         title: '',
@@ -36,7 +47,7 @@ export function EventForm({ event, onSubmit, onCancel, isOpen }: EventFormProps)
       });
     }
     setError(null);
-  }, [event, isOpen]);
+  }, [event, selectedDate, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
