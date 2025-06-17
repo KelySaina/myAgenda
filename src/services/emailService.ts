@@ -41,6 +41,7 @@ export const sendEventConfirmation = async (
   }
 
   try {
+    console.log(userEmail)
     const templateParams = {
       to_email: userEmail.trim(),
       event_title: eventTitle,
